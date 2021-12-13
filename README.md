@@ -80,12 +80,12 @@ Host *
 #------
 
 Match Host i-*
-  ProxyCommand ssh-ssm.sh %h %r
+  ProxyCommand ssh-ssm.sh bash -c 'ssm-ssh.sh $(echo %h|cut -d'.' -f1) %r $(echo %h|/usr/bin/cut -d'.' -f2)'
   IdentityFile ~/.ssh/ssm-ssh-tmp
   StrictHostKeyChecking no
   BatchMode yes
 ```
-This enables you to connect via `ssh` using the appropriate username and instance-id e.g. `ssh ec2-user@<instance-id>`. You'll need to ensure AWS credentials are available in your environment, either with `AWS_PROFILE` or `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN`.
+This enables you to connect via `ssh` using the appropriate username and instance-id e.g. `ssh ec2-user@<instance-id>.<profile>`. .
 
 #### Basic configuration example
 ```

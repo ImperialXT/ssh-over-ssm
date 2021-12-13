@@ -29,19 +29,20 @@ EOF
     --document-name "AWS-RunShellScript" \
     --parameters commands="${ssm_cmd}" \
     --comment "temporary ssm ssh access" \
+    --profile "$3" \
     --output text \
     --query Command.CommandId)
 
   # wait for successful send-command execution
-  aws ssm wait command-executed --instance-id "$1" --command-id "${command_id}"
+  aws ssm wait command-executed --instance-id "$1" --command-id "${command_id}" --profile "$3"
 
   # start ssh session over ssm
-  aws ssm start-session --document-name AWS-StartSSHSession --target "$1"
+  aws ssm start-session --document-name AWS-StartSSHSession --target "$1" --profile "$3"
 }
 
 checks () {
-  if [[ $# -ne 2 ]]; then
-    die "usage: ${0##*/} <instance-id> <ssh user>"
+  if [[ $# -ne 3 ]]; then
+    die "usage: ${0##*/} <instance-id> <ssh user> <profile>"
   elif [[ ! $1 =~ ^i-([0-9a-f]{8,})$ ]]; then
     die "error: invalid instance-id"
   elif [[ $(basename -- $(ps -o comm= -p $PPID)) != "ssh" ]]; then
